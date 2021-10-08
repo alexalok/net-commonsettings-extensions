@@ -8,8 +8,9 @@ namespace Net.CommonSettings.Extensions
 {
     public static class CommonSettingsExtensions
     {
-        public static IHostBuilder AddCommonSettings<TCommonSettings>(this IHostBuilder builder, bool isLoadUserSettings) where TCommonSettings : class
+        public static IHostBuilder UseCommonSettings<TCommonSettings>(this IHostBuilder builder) where TCommonSettings : class
         {
+            bool.TryParse(Environment.GetEnvironmentVariable("DOTNET_LOAD_USER_SETTINGS"), out var isLoadUserSettings);
             builder.ConfigureAppConfiguration((ctx, cfg) =>
             {
                 var env = ctx.HostingEnvironment.EnvironmentName;
