@@ -1,0 +1,9 @@
+{
+	"Common": {
+		"BaseOption": "BaseOption",
+		"OverriddenOption": "BaseOption"
+	},
+	"CustomSectionName": {
+		"BaseOption": "CustomSectionNameBaseOption"
+	}
+}
