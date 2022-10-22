@@ -81,4 +81,22 @@ public class CommonSettingsExtensions_Tests
         // Assert
         commonSettings.BaseOption.Should().BeEquivalentTo("BaseOption");
     }
+
+    [Fact]
+    public void Ensure_Config_File_Reads_From_Absolute_Path()
+    {
+        // Arrange & Act
+        string[] args = { "environment=Development" };
+        IHost host = Host.CreateDefaultBuilder(args)
+            .UseCommonSettings<CommonSettings>(opt =>
+            {
+                opt.IsEnvironmentFileOptional = false;
+            })
+            .Build();
+
+        CommonSettings commonSettings = host.Services.GetRequiredService<IOptions<CommonSettings>>().Value;
+
+        // Assert
+        commonSettings.OverriddenOption.Should().BeEquivalentTo("HelperFile");
+    }
 }

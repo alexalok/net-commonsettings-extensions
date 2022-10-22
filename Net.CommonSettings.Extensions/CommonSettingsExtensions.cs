@@ -52,6 +52,7 @@ public static class CommonSettingsExtensions
             filePath = Path.Combine(Directory.GetParent(AppContext.BaseDirectory)!.FullName, filePath);
 
         JsonConfigurationSource source = new() { Path = filePath, Optional = optional };
+        source.ResolveFileProvider();
 
         builder.Sources.Insert(insertAt, source);
         return builder;
