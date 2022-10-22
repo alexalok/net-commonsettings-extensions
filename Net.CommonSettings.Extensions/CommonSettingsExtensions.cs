@@ -7,11 +7,22 @@ namespace Net.CommonSettings.Extensions;
 
 public static class CommonSettingsExtensions
 {
-    const string DefaultConfigSectionName = "Common";
 
     public static IHostBuilder UseCommonSettings<TCommonSettings>(this IHostBuilder builder,
-        string configSectionName = DefaultConfigSectionName) where TCommonSettings : class
+        string configSectionName = CommonSettingsOptions.DefaultConfigSectionName) where TCommonSettings : class
     {
+        return builder.UseCommonSettings<TCommonSettings>(c =>
+        {
+            c.ConfigSectionName = configSectionName;
+        });
+    }
+
+    public static IHostBuilder UseCommonSettings<TCommonSettings>(this IHostBuilder builder,
+        Action<CommonSettingsOptions> configure) where TCommonSettings : class
+    {
+        CommonSettingsOptions options = new();
+        configure(options);
+
         builder.ConfigureAppConfiguration((ctx, cfg) =>
         {
             var env = ctx.HostingEnvironment.EnvironmentName;
@@ -19,14 +30,14 @@ public static class CommonSettingsExtensions
             // The order is important - we insert more specific settings at the very beginning
             // and then move them forward by inserting base settings at the very beginning as well.
             if (ctx.HostingEnvironment.IsDevelopment())
-                cfg.AddCommonSettingsFile("commonsettings.User.json", true, 0);
-            cfg.AddCommonSettingsFile($"commonsettings.{env}.json", true, 0);
-            cfg.AddCommonSettingsFile("commonsettings.json", true, 0);
+                cfg.AddCommonSettingsFile("commonsettings.User.json", options.IsUserFileOptional, 0);
+            cfg.AddCommonSettingsFile($"commonsettings.{env}.json", options.IsEnvironmentFileOptional, 0);
+            cfg.AddCommonSettingsFile("commonsettings.json", options.IsMainFileOptional, 0);
         });
 
         builder.ConfigureServices((ctx, srv) =>
         {
-            srv.AddCommonSettings<TCommonSettings>(configSectionName);
+            srv.AddCommonSettings<TCommonSettings>(options.ConfigSectionName);
         });
 
         return builder;
