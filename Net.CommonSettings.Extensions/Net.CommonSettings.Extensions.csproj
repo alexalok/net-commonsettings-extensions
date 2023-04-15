@@ -16,9 +16,9 @@
 		<Authors>alexalok</Authors>
 		<Description>.NET Common Settings helpers</Description>
 		<Copyright>Copyright © alexalok 2021</Copyright>
-		<Version>2.1.1</Version>
+		<Version>2.1.2</Version>
 		<PackageReleaseNotes>
-			* Fixed bug when resolving options file from an absolute path
+			* Fixed bug when resolving options file from a relative path when the current directory is not the default config directory.
 		</PackageReleaseNotes>
 		<RepositoryUrl>https://github.com/alexalok/net-commonsettings-extensions</RepositoryUrl>
 		<PackageTags>configuration, common, configuration helpers</PackageTags>

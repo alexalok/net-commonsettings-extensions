@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Json;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 
 namespace Net.CommonSettings.Extensions;
@@ -53,6 +54,18 @@ public static class CommonSettingsExtensions
 
         JsonConfigurationSource source = new() { Path = filePath, Optional = optional };
         source.ResolveFileProvider();
+
+        if(source.FileProvider == null && builder.Properties.TryGetValue("FileProvider", out var fileProvider)
+            && fileProvider is PhysicalFileProvider physicalFp)
+        {
+            var isExists = physicalFp.GetFileInfo(filePath).Exists;
+            if(!isExists)
+            {
+                filePath = Path.Combine(Directory.GetParent(AppContext.BaseDirectory)!.FullName, filePath);
+                source.Path = filePath;
+                source.ResolveFileProvider();
+            }
+        }
 
         builder.Sources.Insert(insertAt, source);
         return builder;

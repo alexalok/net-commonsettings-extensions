@@ -1,5 +1,6 @@
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 
@@ -96,6 +97,27 @@ public class CommonSettingsExtensions_Tests
 
         CommonSettings commonSettings = host.Services.GetRequiredService<IOptions<CommonSettings>>().Value;
 
+        // Assert
+        commonSettings.OverriddenOption.Should().BeEquivalentTo("HelperFile");
+    }
+
+    [Fact]
+    public void Ensure_Config_File_Reads_From_Relative_Path_When_DefaultFileProvider_Points_To_Another_Directory()
+    {
+        // Arrange & Act
+        string[] args = { "environment=Development" };
+        IHost host = Host.CreateDefaultBuilder(args)
+            .ConfigureAppConfiguration(cfg =>
+            {
+                var anotherDir = Path.GetTempPath();
+                cfg.Properties["FileProvider"] = new PhysicalFileProvider(anotherDir);
+            })
+            .UseCommonSettings<CommonSettings>(opt =>
+            {
+                opt.IsEnvironmentFileOptional = false;
+            })
+            .Build();
+        CommonSettings commonSettings = host.Services.GetRequiredService<IOptions<CommonSettings>>().Value;
         // Assert
         commonSettings.OverriddenOption.Should().BeEquivalentTo("HelperFile");
     }
